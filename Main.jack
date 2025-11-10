@@ -1,0 +1,26 @@
+// Archivo: Main.jack
+// Descripción: Punto de entrada principal para probar el movimiento del jugador.
+
+class Main {
+    function void main() {
+        var Player player;
+        var char key;
+
+        do Screen.clearScreen();
+        let player = Player.new();
+
+        while (true) {
+            do player.move();
+            do Sys.wait(30);
+            
+            let key = Keyboard.keyPressed();
+            if (key = 140) {  // ESC para salir
+                do player.dispose();
+                do Screen.clearScreen();
+                return;
+            }
+        }
+
+        return;
+    }
+}

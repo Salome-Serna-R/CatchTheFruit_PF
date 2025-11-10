@@ -1,0 +1,72 @@
+// Archivo: Player.jack
+// Descripción: Representa la canasta controlada por el jugador.
+
+class Player {
+    field int x, y;
+    field int width, height;
+
+    /** Constructor: crea el jugador centrado en la parte inferior. */
+    constructor Player new() {
+        let x = 240;
+        let y = 210;
+        let width = 40;
+        let height = 10;
+        do draw();
+        return this;
+    }
+
+    /** Dibuja el jugador. */
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x, y, x + width, y + height);
+        return;
+    }
+
+    /** Borra el jugador. */
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x, y, x + width, y + height);
+        return;
+    }
+
+    /** Mueve el jugador según entrada del teclado. */
+    method void move() {
+        var char key;
+        let key = Keyboard.keyPressed();
+
+        if (key = 130) { // Flecha izquierda
+            if (x > 8) {  // Límite izquierdo más seguro
+                do erase();
+                let x = x - 8;
+                do draw();
+            }
+        }
+
+        if (key = 132) { // Flecha derecha
+            if ((x + width) < 504) {  // Límite derecho más seguro
+                do erase();
+                let x = x + 8;
+                do draw();
+            }
+        }
+
+        return;
+    }
+
+    /** Retorna la posición x del jugador. */
+    method int getX() {
+        return x;
+    }
+
+    /** Retorna el ancho del jugador. */
+    method int getWidth() {
+        return width;
+    }
+
+    /** Limpia el jugador de la pantalla. */
+    method void dispose() {
+        do erase();
+        do Memory.deAlloc(this);
+        return;
+    }
+}
