@@ -1,0 +1,137 @@
+// Falling.jack
+// Representa un objeto que cae: tipo 0 = fruta (rectángulo), tipo 1 = bomba (cuadrado)
+
+class Falling {
+    field int x, y;
+    field int w, h;
+    field int speed;
+    field int type; // 0 = fruta, 1 = bomba
+
+    constructor Falling new(int startX, int t) {
+        let x = startX;
+        let y = 0;
+
+        //Tamaño según tipo
+        if (t = 1) {
+            let w = 16;
+            let h = 16;
+        } else {
+            let w = 12;
+            let h = 12;
+        }
+
+
+        let speed = 1; // velocidad fija y lenta
+        let type = t;
+
+        do draw();
+        return this;
+    }
+
+    method void draw() {
+        var int x1, y1, x2, y2;
+        let x1 = x;
+        let y1 = y;
+        let x2 = x + w;
+        let y2 = y + h;
+
+        // Clamp
+        if (x1 < 0) { let x1 = 0; }
+        if (y1 < 0) { let y1 = 0; }
+        if (x2 > 511) { let x2 = 511; }
+        if (y2 > 255) { let y2 = 255; }
+        if (x2 < x1) { let x2 = x1; }
+        if (y2 < y1) { let y2 = y1; }
+
+        // Si es bomba -> dibujo doble rectángulo (borde)
+        if (type = 1) {
+            // Borde exterior
+            do Screen.setColor(true);
+            do Screen.drawRectangle(x1, y1, x2, y2);
+
+            // Interior apagado => crea un "hueco"
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x1 + 2, y1 + 2, x2 - 2, y2 - 2);
+
+            do Screen.setColor(true); // reset color
+        }
+        else {
+            // Fruta normal
+            do Screen.setColor(true);
+            do Screen.drawRectangle(x1, y1, x2, y2);
+        }
+
+        return;
+    }
+
+
+    method void erase() {
+        var int x1, y1, x2, y2;
+        let x1 = x;
+        let y1 = y;
+        let x2 = x + w;
+        let y2 = y + h;
+
+        if (x1 < 0) { let x1 = 0; }
+        if (y1 < 0) { let y1 = 0; }
+        if (x2 > 511) { let x2 = 511; }
+        if (y2 > 255) { let y2 = 255; }
+
+        if (x2 < x1) { let x2 = x1; }
+        if (y2 < y1) { let y2 = y1; }
+
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x1, y1, x2, y2);
+        return;
+    }
+
+
+
+    /** Mueve el objeto hacia abajo. Devuelve 1 si llegó al fondo (necesita respawn), 0 si sigue. */
+    method int fall() {
+        do erase();
+        let y = y + speed;
+        if ((y > 230)) {
+            return 1;
+        } else {
+            do draw();
+            return 0;
+        }
+    }
+
+    /** Reinicia la posición y el tipo. startX debe estar dentro del ancho de pantalla. */
+    method void reset(int startX, int t) {
+        do erase();
+        let x = startX;
+        let y = 0;
+        let type = t;
+
+        // Clamp duro
+        if (x < 0) { let x = 0; }
+        if (x > 480) { let x = 480; }
+
+        do draw();
+        return;
+    }
+
+
+    /** Retorna true si fue atrapado (colisión AABB simple). */
+    method boolean isCaught(int playerX, int playerWidth) {
+        // comprobamos que el borde inferior del objeto haya alcanzado la canasta
+        if ((y + h > 201)) {
+            // colisión horizontal: overlap entre [x, x+w] y [playerX, playerX+playerWidth]
+            if (((x < (playerX + playerWidth)) & ((x + w) > playerX))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    method int getType() {
+        return type;
+    }
+
+    method int getWidth() {
+        return w;
+    }
+}

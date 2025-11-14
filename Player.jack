@@ -1,11 +1,10 @@
-// Archivo: Player.jack
-// Descripción: Representa la canasta controlada por el jugador.
+// Player.jack
+// La canasta controlada por el jugador
 
 class Player {
     field int x, y;
     field int width, height;
 
-    /** Constructor: crea el jugador centrado en la parte inferior. */
     constructor Player new() {
         let x = 240;
         let y = 210;
@@ -15,37 +14,52 @@ class Player {
         return this;
     }
 
-    /** Dibuja el jugador. */
     method void draw() {
+        // Evitar que el jugador se dibuje fuera de limites
+        if (x < 0) { let x = 0; }
+        if (x + width > 511) { let x = 511 - width; }
+
         do Screen.setColor(true);
         do Screen.drawRectangle(x, y, x + width, y + height);
         return;
     }
 
-    /** Borra el jugador. */
+
     method void erase() {
+        if (x < 0) { let x = 0; }
+        if (x + width > 511) { let x = 511 - width; }
+
         do Screen.setColor(false);
         do Screen.drawRectangle(x, y, x + width, y + height);
         return;
     }
 
-    /** Mueve el jugador según entrada del teclado. */
     method void move() {
         var char key;
         let key = Keyboard.keyPressed();
 
-        if (key = 130) { // Flecha izquierda
-            if (x > 8) {  // Límite izquierdo más seguro
+        // izquierda
+        if ((key = 130)) {
+            if (x > 5) {
                 do erase();
-                let x = x - 8;
+                let x = x - 12;
+
+                //clamp
+                if (x < 0) { let x = 0; }
+    
                 do draw();
             }
         }
 
-        if (key = 132) { // Flecha derecha
-            if ((x + width) < 504) {  // Límite derecho más seguro
+        // derecha
+        if ((key = 132)) {
+            if (x + width < 510) {
                 do erase();
-                let x = x + 8;
+                let x = x + 12;
+
+                //clamp
+                if (x + width > 511) { let x = 511 - width;}
+
                 do draw();
             }
         }
@@ -53,20 +67,20 @@ class Player {
         return;
     }
 
-    /** Retorna la posición x del jugador. */
     method int getX() {
         return x;
     }
 
-    /** Retorna el ancho del jugador. */
     method int getWidth() {
         return width;
     }
 
-    /** Limpia el jugador de la pantalla. */
+    method int getY() {
+        return y;
+    }
+
     method void dispose() {
         do erase();
-        do Memory.deAlloc(this);
         return;
     }
 }

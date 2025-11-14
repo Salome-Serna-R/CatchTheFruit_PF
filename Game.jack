@@ -1,4 +1,149 @@
-// Archivo: Game.jack
-// Descripción: Controla la lógica principal del juego.
+// Game.jack
+// Controla la lógica del juego: spawn, score, vidas, y loop principal.
 
-// (aquí iría el contenido del archivo Game.jack)
+class Game {
+    field Player player;
+    field Falling obj;
+    field int score;
+    field int lives;
+    field int seed;
+    field int lastSpawnX; // guarda la última X usada para evitar repetir
+    field int lastScore;
+    field int lastLives;
+
+    constructor Game new() {
+        let player = Player.new();
+        let seed = 123;      // inicializa semilla
+        let score = 0;
+        let lives = 3;
+        let lastSpawnX = -1; // ninguno todavía
+        // objeto inicial centrado
+        let obj = Falling.new(240, 0);
+        let lastScore = -1;
+        let lastLives = -1;
+        return this;
+    }
+
+    /** Generador simple de 0..(range-1) usando seed (seguro). */
+    method int rand(int range) {
+        var int t;
+        if (range < 1) { return 0; }     // protege división por cero/valores inválidos
+
+        // LCG simple: seed = (seed * a + c) mod m
+        // Evitamos números grandes que Jack no maneja bien haciendo operaciones pequeñas.
+        let seed = seed + 1;             // avance sencillo
+        let t = seed * 37;               // mezcla
+        let t = t - (t / range) * range; // t % range de forma segura
+        return t;
+    }
+
+
+
+    method void drawHUD() {
+        // solo dibujar cuando cambie score o vidas
+        if ((~(score = lastScore)) | (~(lives = lastLives))) {
+            do Screen.setColor(false);
+            do Screen.drawRectangle(0, 0, 200, 14); // borra el HUD
+
+            do Output.moveCursor(0, 0);
+            do Output.printString("Score: ");
+            do Output.printInt(score);
+            do Output.printString("   Lives: ");
+            do Output.printInt(lives);
+
+            let lastScore = score;
+            let lastLives = lives;
+        }
+        return;
+    }
+
+
+    method void run() {
+        var char key;
+        var int res;
+        var int r;
+        var int spawnType;
+        var int spawnX;
+
+        while (true) {
+            do player.move();
+
+            // Mover objeto y controlar llegada al suelo
+            let res = obj.fall();
+            if (res = 1) {
+                // si llegó al fondo y era fruta -> perder vida
+                if (obj.getType() = 0) {
+                    let lives = lives - 1;
+                    if (lives = 0) {
+                        do Screen.clearScreen();
+                        do Output.moveCursor(10, 10);
+                        do Output.printString("GAME OVER");
+                        do Output.moveCursor(11, 10);
+                        do Output.printString("Score: ");
+                        do Output.printInt(score);
+                        return;
+                    }
+                }
+
+                // respawn: elegir tipo y x (evitar repetir X)
+                let r = rand(10);
+                if (r < 2) { let spawnType = 1; } else { let spawnType = 0; }
+
+                // generar spawnX seguro dentro del ancho disponible
+                let spawnX = rand(460);   // 0..459
+                // si es igual a la anterior, desplazar un poco (evita que queden exactamente iguales)
+                if (spawnX = lastSpawnX) {
+                    let spawnX = spawnX + 20;
+                    if (spawnX > 460) { let spawnX = spawnX - 40; } // recorta en caso de overflow
+                }
+                let lastSpawnX = spawnX;
+
+                do obj.reset(spawnX, spawnType);
+            }
+
+            // Comprobar captura de objeto (fruta o bomba)
+            if (obj.isCaught(player.getX(), player.getWidth())) {
+                if (obj.getType() = 0) {
+                    let score = score + 1;
+                } else {
+                    let lives = lives - 1;
+                    if (lives = 0) {
+                        do Screen.clearScreen();
+                        do Output.moveCursor(10, 10);
+                        do Output.printString("GAME OVER");
+                        do Output.moveCursor(11, 10);
+                        do Output.printString("Score: ");
+                        do Output.printInt(score);
+                        return;
+                    }
+                }
+
+                // respawn tras captura (igual que antes, evitar repetir X)
+                let r = rand(10);
+                if (r < 2) { let spawnType = 1; } else { let spawnType = 0; }
+                let spawnX = rand(460);
+                if (spawnX = lastSpawnX) {
+                    let spawnX = spawnX + 20;
+                    if (spawnX > 460) { let spawnX = spawnX - 40; }
+                }
+                let lastSpawnX = spawnX;
+                do obj.reset(spawnX, spawnType);
+            }
+
+        
+            do drawHUD();
+
+            // ESC para salir   
+            let key = Keyboard.keyPressed();
+            if (key = 140) {
+                do player.dispose();
+                do Screen.clearScreen();
+                return;
+            }
+
+    
+            do Sys.wait(5);
+        } // while
+        return;
+    } // run
+} // class
