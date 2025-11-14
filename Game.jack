@@ -1,139 +1,146 @@
 // Game.jack
-// Controla la lógica del juego: spawn, score, vidas, y loop principal.
+// Controla la lógica del juego: spawn, score, vidas y loop principal.
 
 class Game {
+
     field Player player;
     field Falling obj;
     field int score;
     field int lives;
     field int seed;
-    field int lastSpawnX; // guarda la última X usada para evitar repetir
-    field int lastScore;
-    field int lastLives;
+    field int lastSpawnX;
+
+    // HUD labels creados una sola vez (evita stack overflow)
+    static String scoreLabel;
+    static String livesLabel;
 
     constructor Game new() {
         let player = Player.new();
-        let seed = 123;      // inicializa semilla
+        let seed = 123;
         let score = 0;
         let lives = 3;
-        let lastSpawnX = -1; // ninguno todavía
-        // objeto inicial centrado
-        let obj = Falling.new(240, 0);
-        let lastScore = -1;
-        let lastLives = -1;
+        let lastSpawnX = -1;
+
+        // objeto inicial
+        let obj = Falling.new(240, 0); // solo frutas
+
+        // ==========================
+        // CREAR LOS STRINGS DEL HUD
+        // ==========================
+
+        let scoreLabel = String.new(7);
+        do scoreLabel.appendChar(83);  // S
+        do scoreLabel.appendChar(99);  // c
+        do scoreLabel.appendChar(111); // o
+        do scoreLabel.appendChar(114); // r
+        do scoreLabel.appendChar(101); // e
+        do scoreLabel.appendChar(58);  // :
+        do scoreLabel.appendChar(32);  // espacio
+
+        let livesLabel = String.new(7);
+        do livesLabel.appendChar(76);  // L
+        do livesLabel.appendChar(105); // i
+        do livesLabel.appendChar(118); // v
+        do livesLabel.appendChar(101); // e
+        do livesLabel.appendChar(115); // s
+        do livesLabel.appendChar(58);  // :
+        do livesLabel.appendChar(32);  // espacio
+
         return this;
     }
 
-    /** Generador simple de 0..(range-1) usando seed (seguro). */
+    /** Generador simple para números pseudoaleatorios */
     method int rand(int range) {
         var int t;
-        if (range < 1) { return 0; }     // protege división por cero/valores inválidos
 
-        // LCG simple: seed = (seed * a + c) mod m
-        // Evitamos números grandes que Jack no maneja bien haciendo operaciones pequeñas.
-        let seed = seed + 1;             // avance sencillo
-        let t = seed * 37;               // mezcla
-        let t = t - (t / range) * range; // t % range de forma segura
+        if (range < 1) { return 0; }
+
+        let seed = seed + 1;
+        let t = seed * 37;
+        let t = t - (t / range) * range;
+
         return t;
     }
 
-
-
+    /** HUD optimizado: NO crea strings en el loop */
     method void drawHUD() {
-        // solo dibujar cuando cambie score o vidas
-        if ((~(score = lastScore)) | (~(lives = lastLives))) {
-            do Screen.setColor(false);
-            do Screen.drawRectangle(0, 0, 200, 14); // borra el HUD
-
-            do Output.moveCursor(0, 0);
-            do Output.printString("Score: ");
-            do Output.printInt(score);
-            do Output.printString("   Lives: ");
-            do Output.printInt(lives);
-
-            let lastScore = score;
-            let lastLives = lives;
-        }
+        do Output.moveCursor(0, 0);
+        do Output.printString(scoreLabel);
+        do Output.printInt(score);
+        do Output.printString(livesLabel);
+        do Output.printInt(lives);
         return;
     }
-
 
     method void run() {
         var char key;
         var int res;
         var int r;
-        var int spawnType;
         var int spawnX;
 
         while (true) {
+
             do player.move();
 
-            // Mover objeto y controlar llegada al suelo
+            // ---------------------------
+            // 1) Mover objeto hacia abajo
+            // ---------------------------
             let res = obj.fall();
+
             if (res = 1) {
-                // si llegó al fondo y era fruta -> perder vida
-                if (obj.getType() = 0) {
-                    let lives = lives - 1;
-                    if (lives = 0) {
-                        do Screen.clearScreen();
-                        do Output.moveCursor(10, 10);
-                        do Output.printString("GAME OVER");
-                        do Output.moveCursor(11, 10);
-                        do Output.printString("Score: ");
-                        do Output.printInt(score);
-                        return;
-                    }
+                // Perdió si deja caer una fruta
+                let lives = lives - 1;
+                if (lives = 0) {
+                    do Screen.clearScreen();
+                    do Output.moveCursor(10, 10);
+                    do Output.printString("GAME OVER");
+                    do Output.moveCursor(11, 10);
+                    do Output.printString("Score: ");
+                    do Output.printInt(score);
+                    return;
                 }
 
-                // respawn: elegir tipo y x (evitar repetir X)
-                let r = rand(10);
-                if (r < 2) { let spawnType = 1; } else { let spawnType = 0; }
-
-                // generar spawnX seguro dentro del ancho disponible
-                let spawnX = rand(460);   // 0..459
-                // si es igual a la anterior, desplazar un poco (evita que queden exactamente iguales)
-                if (spawnX = lastSpawnX) {
-                    let spawnX = spawnX + 20;
-                    if (spawnX > 460) { let spawnX = spawnX - 40; } // recorta en caso de overflow
-                }
-                let lastSpawnX = spawnX;
-
-                do obj.reset(spawnX, spawnType);
-            }
-
-            // Comprobar captura de objeto (fruta o bomba)
-            if (obj.isCaught(player.getX(), player.getWidth())) {
-                if (obj.getType() = 0) {
-                    let score = score + 1;
-                } else {
-                    let lives = lives - 1;
-                    if (lives = 0) {
-                        do Screen.clearScreen();
-                        do Output.moveCursor(10, 10);
-                        do Output.printString("GAME OVER");
-                        do Output.moveCursor(11, 10);
-                        do Output.printString("Score: ");
-                        do Output.printInt(score);
-                        return;
-                    }
-                }
-
-                // respawn tras captura (igual que antes, evitar repetir X)
-                let r = rand(10);
-                if (r < 2) { let spawnType = 1; } else { let spawnType = 0; }
+                // Respawn fruta
                 let spawnX = rand(460);
+
                 if (spawnX = lastSpawnX) {
                     let spawnX = spawnX + 20;
                     if (spawnX > 460) { let spawnX = spawnX - 40; }
                 }
+
                 let lastSpawnX = spawnX;
-                do obj.reset(spawnX, spawnType);
+
+                do obj.reset(spawnX, 0); // solo frutas
             }
 
-        
+            // -------------------
+            // 2) Captura
+            // -------------------
+            if (obj.isCaught(player.getX(), player.getWidth())) {
+
+                let score = score + 1;
+
+                // Nuevo objeto
+                let spawnX = rand(460);
+
+                if (spawnX = lastSpawnX) {
+                    let spawnX = spawnX + 20;
+                    if (spawnX > 460) { let spawnX = spawnX - 40; }
+                }
+
+                let lastSpawnX = spawnX;
+
+                do obj.reset(spawnX, 0); // solo frutas
+            }
+
+            // -------------------
+            // 3) HUD
+            // -------------------
             do drawHUD();
 
-            // ESC para salir   
+            // -------------------
+            // 4) Tecla ESC
+            // -------------------
             let key = Keyboard.keyPressed();
             if (key = 140) {
                 do player.dispose();
@@ -141,9 +148,10 @@ class Game {
                 return;
             }
 
-    
             do Sys.wait(5);
-        } // while
+        }
+
         return;
-    } // run
-} // class
+    }
+
+}
