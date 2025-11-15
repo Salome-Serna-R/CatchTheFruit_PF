@@ -15,12 +15,13 @@ class Falling {
         if (t = 1) {
             let w = 16;
             let h = 16;
+            let speed = 4;   // bombas caen más rápido
         } else {
             let w = 12;
             let h = 12;
+            let speed = 2;   // fruta normal
         }
 
-        let speed = 1;
         let type = t;
 
         do draw();
@@ -124,6 +125,12 @@ class Falling {
         let x = startX;
         let y = 0;
         let type = t;
+
+        if (t = 1) {
+            let speed = 4;   // bombas rápidas
+        } else {
+            let speed = 2;   // fruta normal
+        }
 
         if (x < 0)  { let x = 0; }
         if (x > 480){ let x = 480; }

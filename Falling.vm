@@ -1,398 +1,433 @@
 function Falling.new 0
-push constant 6
-call Memory.alloc 1
-pop pointer 0
-push argument 0
-pop this 0
-push constant 0
-pop this 1
-push argument 1
-push constant 1
-eq
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push constant 16
-pop this 2
-push constant 16
-pop this 3
-goto IF_END0
-label IF_FALSE0
-push constant 12
-pop this 2
-push constant 12
-pop this 3
-label IF_END0
-push constant 1
-pop this 4
-push argument 1
-pop this 5
-push pointer 0
-call Falling.draw 1
-pop temp 0
-push pointer 0
-return
+    push constant 6
+    call Memory.alloc 1
+    pop pointer 0
+    push argument 0
+    pop this 0
+    push constant 0
+    pop this 1
+    push argument 1
+    push constant 1
+    eq
+    not
+    if-goto Falling_1
+    push constant 16
+    pop this 2
+    push constant 16
+    pop this 3
+    push constant 4
+    pop this 4
+    goto Falling_0
+label Falling_1
+    push constant 12
+    pop this 2
+    push constant 12
+    pop this 3
+    push constant 1
+    pop this 4
+label Falling_0
+    push argument 1
+    pop this 5
+    push pointer 0
+    call Falling.draw 1
+    pop temp 0
+    push pointer 0
+    return
 function Falling.draw 8
-push argument 0
-pop pointer 0
-push this 0
-pop local 0
-push this 1
-pop local 1
-push this 0
-push this 2
-add
-pop local 2
-push this 1
-push this 3
-add
-pop local 3
-push local 0
-push constant 0
-lt
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push constant 0
-pop local 0
-label IF_FALSE0
-push local 1
-push constant 0
-lt
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-push constant 0
-pop local 1
-label IF_FALSE1
-push local 2
-push constant 511
-gt
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
-push constant 511
-pop local 2
-label IF_FALSE2
-push local 3
-push constant 255
-gt
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
-push constant 255
-pop local 3
-label IF_FALSE3
-push local 2
-push local 0
-lt
-if-goto IF_TRUE4
-goto IF_FALSE4
-label IF_TRUE4
-push local 0
-pop local 2
-label IF_FALSE4
-push local 3
-push local 1
-lt
-if-goto IF_TRUE5
-goto IF_FALSE5
-label IF_TRUE5
-push local 1
-pop local 3
-label IF_FALSE5
-push this 5
-push constant 1
-eq
-if-goto IF_TRUE6
-goto IF_FALSE6
-label IF_TRUE6
-push constant 0
-not
-call Screen.setColor 1
-pop temp 0
-push local 0
-push local 1
-push local 2
-push local 3
-call Screen.drawRectangle 4
-pop temp 0
-push local 0
-push constant 2
-add
-pop local 4
-push local 1
-push constant 2
-add
-pop local 5
-push local 2
-push constant 2
-sub
-pop local 6
-push local 3
-push constant 2
-sub
-pop local 7
-push local 4
-push constant 0
-lt
-if-goto IF_TRUE7
-goto IF_FALSE7
-label IF_TRUE7
-push constant 0
-pop local 4
-label IF_FALSE7
-push local 5
-push constant 0
-lt
-if-goto IF_TRUE8
-goto IF_FALSE8
-label IF_TRUE8
-push constant 0
-pop local 5
-label IF_FALSE8
-push local 6
-push constant 511
-gt
-if-goto IF_TRUE9
-goto IF_FALSE9
-label IF_TRUE9
-push constant 511
-pop local 6
-label IF_FALSE9
-push local 7
-push constant 255
-gt
-if-goto IF_TRUE10
-goto IF_FALSE10
-label IF_TRUE10
-push constant 255
-pop local 7
-label IF_FALSE10
-push local 6
-push local 4
-lt
-if-goto IF_TRUE11
-goto IF_FALSE11
-label IF_TRUE11
-push local 4
-pop local 6
-label IF_FALSE11
-push local 7
-push local 5
-lt
-if-goto IF_TRUE12
-goto IF_FALSE12
-label IF_TRUE12
-push local 5
-pop local 7
-label IF_FALSE12
-push constant 0
-call Screen.setColor 1
-pop temp 0
-push local 4
-push local 5
-push local 6
-push local 7
-call Screen.drawRectangle 4
-pop temp 0
-push constant 0
-not
-call Screen.setColor 1
-pop temp 0
-goto IF_END6
-label IF_FALSE6
-push constant 0
-not
-call Screen.setColor 1
-pop temp 0
-push local 0
-push local 1
-push local 2
-push local 3
-call Screen.drawRectangle 4
-pop temp 0
-label IF_END6
-push constant 0
-return
+    push argument 0
+    pop pointer 0
+    push this 0
+    pop local 0
+    push this 1
+    pop local 1
+    push this 0
+    push this 2
+    add
+    pop local 2
+    push this 1
+    push this 3
+    add
+    pop local 3
+    push local 0
+    push constant 0
+    lt
+    not
+    if-goto Falling_3
+    push constant 0
+    pop local 0
+    goto Falling_2
+label Falling_3
+label Falling_2
+    push local 1
+    push constant 0
+    lt
+    not
+    if-goto Falling_5
+    push constant 0
+    pop local 1
+    goto Falling_4
+label Falling_5
+label Falling_4
+    push local 2
+    push constant 511
+    gt
+    not
+    if-goto Falling_7
+    push constant 511
+    pop local 2
+    goto Falling_6
+label Falling_7
+label Falling_6
+    push local 3
+    push constant 255
+    gt
+    not
+    if-goto Falling_9
+    push constant 255
+    pop local 3
+    goto Falling_8
+label Falling_9
+label Falling_8
+    push local 2
+    push local 0
+    lt
+    not
+    if-goto Falling_11
+    push local 0
+    pop local 2
+    goto Falling_10
+label Falling_11
+label Falling_10
+    push local 3
+    push local 1
+    lt
+    not
+    if-goto Falling_13
+    push local 1
+    pop local 3
+    goto Falling_12
+label Falling_13
+label Falling_12
+    push this 5
+    push constant 1
+    eq
+    not
+    if-goto Falling_15
+    push constant 1
+    neg
+    call Screen.setColor 1
+    pop temp 0
+    push local 0
+    push local 1
+    push local 2
+    push local 3
+    call Screen.drawRectangle 4
+    pop temp 0
+    push local 0
+    push constant 2
+    add
+    pop local 4
+    push local 1
+    push constant 2
+    add
+    pop local 5
+    push local 2
+    push constant 2
+    sub
+    pop local 6
+    push local 3
+    push constant 2
+    sub
+    pop local 7
+    push local 4
+    push constant 0
+    lt
+    not
+    if-goto Falling_17
+    push constant 0
+    pop local 4
+    goto Falling_16
+label Falling_17
+label Falling_16
+    push local 5
+    push constant 0
+    lt
+    not
+    if-goto Falling_19
+    push constant 0
+    pop local 5
+    goto Falling_18
+label Falling_19
+label Falling_18
+    push local 6
+    push constant 511
+    gt
+    not
+    if-goto Falling_21
+    push constant 511
+    pop local 6
+    goto Falling_20
+label Falling_21
+label Falling_20
+    push local 7
+    push constant 255
+    gt
+    not
+    if-goto Falling_23
+    push constant 255
+    pop local 7
+    goto Falling_22
+label Falling_23
+label Falling_22
+    push local 6
+    push local 4
+    lt
+    not
+    if-goto Falling_25
+    push local 4
+    pop local 6
+    goto Falling_24
+label Falling_25
+label Falling_24
+    push local 7
+    push local 5
+    lt
+    not
+    if-goto Falling_27
+    push local 5
+    pop local 7
+    goto Falling_26
+label Falling_27
+label Falling_26
+    push constant 0
+    call Screen.setColor 1
+    pop temp 0
+    push local 4
+    push local 5
+    push local 6
+    push local 7
+    call Screen.drawRectangle 4
+    pop temp 0
+    push constant 1
+    neg
+    call Screen.setColor 1
+    pop temp 0
+    goto Falling_14
+label Falling_15
+    push constant 1
+    neg
+    call Screen.setColor 1
+    pop temp 0
+    push local 0
+    push local 1
+    push local 2
+    push local 3
+    call Screen.drawRectangle 4
+    pop temp 0
+label Falling_14
+    push constant 0
+    return
 function Falling.erase 4
-push argument 0
-pop pointer 0
-push this 0
-pop local 0
-push this 1
-pop local 1
-push this 0
-push this 2
-add
-pop local 2
-push this 1
-push this 3
-add
-pop local 3
-push local 0
-push constant 0
-lt
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push constant 0
-pop local 0
-label IF_FALSE0
-push local 1
-push constant 0
-lt
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-push constant 0
-pop local 1
-label IF_FALSE1
-push local 2
-push constant 511
-gt
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
-push constant 511
-pop local 2
-label IF_FALSE2
-push local 3
-push constant 255
-gt
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
-push constant 255
-pop local 3
-label IF_FALSE3
-push local 2
-push local 0
-lt
-if-goto IF_TRUE4
-goto IF_FALSE4
-label IF_TRUE4
-push local 0
-pop local 2
-label IF_FALSE4
-push local 3
-push local 1
-lt
-if-goto IF_TRUE5
-goto IF_FALSE5
-label IF_TRUE5
-push local 1
-pop local 3
-label IF_FALSE5
-push constant 0
-call Screen.setColor 1
-pop temp 0
-push local 0
-push local 1
-push local 2
-push local 3
-call Screen.drawRectangle 4
-pop temp 0
-push constant 0
-return
+    push argument 0
+    pop pointer 0
+    push this 0
+    pop local 0
+    push this 1
+    pop local 1
+    push this 0
+    push this 2
+    add
+    pop local 2
+    push this 1
+    push this 3
+    add
+    pop local 3
+    push local 0
+    push constant 0
+    lt
+    not
+    if-goto Falling_29
+    push constant 0
+    pop local 0
+    goto Falling_28
+label Falling_29
+label Falling_28
+    push local 1
+    push constant 0
+    lt
+    not
+    if-goto Falling_31
+    push constant 0
+    pop local 1
+    goto Falling_30
+label Falling_31
+label Falling_30
+    push local 2
+    push constant 511
+    gt
+    not
+    if-goto Falling_33
+    push constant 511
+    pop local 2
+    goto Falling_32
+label Falling_33
+label Falling_32
+    push local 3
+    push constant 255
+    gt
+    not
+    if-goto Falling_35
+    push constant 255
+    pop local 3
+    goto Falling_34
+label Falling_35
+label Falling_34
+    push local 2
+    push local 0
+    lt
+    not
+    if-goto Falling_37
+    push local 0
+    pop local 2
+    goto Falling_36
+label Falling_37
+label Falling_36
+    push local 3
+    push local 1
+    lt
+    not
+    if-goto Falling_39
+    push local 1
+    pop local 3
+    goto Falling_38
+label Falling_39
+label Falling_38
+    push constant 0
+    call Screen.setColor 1
+    pop temp 0
+    push local 0
+    push local 1
+    push local 2
+    push local 3
+    call Screen.drawRectangle 4
+    pop temp 0
+    push constant 0
+    return
 function Falling.fall 0
-push argument 0
-pop pointer 0
-push pointer 0
-call Falling.erase 1
-pop temp 0
-push this 1
-push this 4
-add
-pop this 1
-push this 1
-push constant 230
-gt
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push constant 1
-return
-label IF_FALSE0
-push pointer 0
-call Falling.draw 1
-pop temp 0
-push constant 0
-return
+    push argument 0
+    pop pointer 0
+    push pointer 0
+    call Falling.erase 1
+    pop temp 0
+    push this 1
+    push this 4
+    add
+    pop this 1
+    push this 1
+    push constant 230
+    gt
+    not
+    if-goto Falling_41
+    push constant 1
+    return
+    goto Falling_40
+label Falling_41
+label Falling_40
+    push pointer 0
+    call Falling.draw 1
+    pop temp 0
+    push constant 0
+    return
 function Falling.reset 0
-push argument 0
-pop pointer 0
-push pointer 0
-call Falling.erase 1
-pop temp 0
-push argument 1
-pop this 0
-push constant 0
-pop this 1
-push argument 2
-pop this 5
-push this 0
-push constant 0
-lt
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push constant 0
-pop this 0
-label IF_FALSE0
-push this 0
-push constant 480
-gt
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-push constant 480
-pop this 0
-label IF_FALSE1
-push pointer 0
-call Falling.draw 1
-pop temp 0
-push constant 0
-return
+    push argument 0
+    pop pointer 0
+    push pointer 0
+    call Falling.erase 1
+    pop temp 0
+    push argument 1
+    pop this 0
+    push constant 0
+    pop this 1
+    push argument 2
+    pop this 5
+    push argument 2
+    push constant 1
+    eq
+    not
+    if-goto Falling_43
+    push constant 4
+    pop this 4
+    goto Falling_42
+label Falling_43
+    push constant 1
+    pop this 4
+label Falling_42
+    push this 0
+    push constant 0
+    lt
+    not
+    if-goto Falling_45
+    push constant 0
+    pop this 0
+    goto Falling_44
+label Falling_45
+label Falling_44
+    push this 0
+    push constant 480
+    gt
+    not
+    if-goto Falling_47
+    push constant 480
+    pop this 0
+    goto Falling_46
+label Falling_47
+label Falling_46
+    push pointer 0
+    call Falling.draw 1
+    pop temp 0
+    push constant 0
+    return
 function Falling.isCaught 0
-push argument 0
-pop pointer 0
-push this 1
-push this 3
-add
-push constant 201
-gt
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push this 0
-push argument 1
-push argument 2
-add
-lt
-push this 0
-push this 2
-add
-push argument 1
-gt
-and
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-push constant 0
-not
-return
-label IF_FALSE1
-label IF_FALSE0
-push constant 0
-return
+    push argument 0
+    pop pointer 0
+    push this 1
+    push this 3
+    add
+    push constant 201
+    gt
+    not
+    if-goto Falling_49
+    push this 0
+    push argument 1
+    push argument 2
+    add
+    lt
+    push this 0
+    push this 2
+    add
+    push argument 1
+    gt
+    and
+    not
+    if-goto Falling_51
+    push constant 1
+    neg
+    return
+    goto Falling_50
+label Falling_51
+label Falling_50
+    goto Falling_48
+label Falling_49
+label Falling_48
+    push constant 0
+    return
 function Falling.getType 0
-push argument 0
-pop pointer 0
-push this 5
-return
+    push argument 0
+    pop pointer 0
+    push this 5
+    return
 function Falling.getWidth 0
-push argument 0
-pop pointer 0
-push this 2
-return
+    push argument 0
+    pop pointer 0
+    push this 2
+    return
