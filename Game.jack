@@ -126,7 +126,7 @@ class Game {
                 // decidir si es bomba o fruta
                 // (1 de cada 10 será bomba)
                 let objType = 0;
-                if (rand(10) = 1) { let objType = 1; }
+                if (rand(3) = 1) { let objType = 1; }
 
                 do obj.reset(spawnX, objType);
             }
@@ -167,7 +167,7 @@ class Game {
 
                 // decidir nuevo tipo
                 let objType = 0;
-                if (rand(10) = 1) { let objType = 1; }
+                if (rand(3) = 1) { let objType = 1; }
 
                 do obj.reset(spawnX, objType);
             }
