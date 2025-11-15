@@ -21,8 +21,8 @@ class Game {
         let lives = 3;
         let lastSpawnX = -1;
 
-        // objeto inicial
-        let obj = Falling.new(240, 0); // solo frutas
+        // objeto inicial (fruta)
+        let obj = Falling.new(240, 0);
 
         // ==========================
         // CREAR LOS STRINGS DEL HUD
@@ -55,16 +55,12 @@ class Game {
 
         if (range < 1) { return 0; }
 
-        // LCG seguro: seed = (seed * 1103515245 + 12345) & 0x7FFF
+        // LCG seguro
         let seed = seed * 25173 + 13849;
+        let seed = seed & 32767;
 
-        // reducir la magnitud con AND
-        let seed = seed & 32767;  // 0x7FFF = 32767
-
-        // Ahora seed siempre está entre 0 y 32767
         let r = seed;
 
-        // Ajustar al rango deseado
         while (r > range) {
             let r = r - range;
         }
@@ -86,9 +82,9 @@ class Game {
     method void run() {
         var char key;
         var int res;
-        var int r;
         var int spawnX;
         var boolean same;
+        var int objType;
 
         while (true) {
 
@@ -100,23 +96,26 @@ class Game {
             let res = obj.fall();
 
             if (res = 1) {
-                // Perdió si deja caer una fruta
-                let lives = lives - 1;
-                if (lives = 0) {
-                    do Screen.clearScreen();
-                    do Output.moveCursor(10, 10);
-                    do Output.printString("GAME OVER");
-                    do Output.moveCursor(11, 10);
-                    do Output.printString("Score: ");
-                    do Output.printInt(score);
-                    return;
+
+                // si cayó fruta (type = 0) → perder vida
+                if (obj.getType() = 0) {
+                    let lives = lives - 1;
+
+                    if (lives = 0) {
+                        do Screen.clearScreen();
+                        do Output.moveCursor(10, 10);
+                        do Output.printString("GAME OVER");
+                        do Output.moveCursor(11, 10);
+                        do Output.printString("Score: ");
+                        do Output.printInt(score);
+                        return;
+                    }
                 }
 
-                // Respawn fruta
+                // Respawn objeto
                 let spawnX = rand(460);
-                
-                let same = (spawnX = lastSpawnX);
 
+                let same = (spawnX = lastSpawnX);
                 if (same) {
                     let spawnX = spawnX + 20;
                     if (spawnX > 460) { let spawnX = spawnX - 40; }
@@ -124,7 +123,12 @@ class Game {
 
                 let lastSpawnX = spawnX;
 
-                do obj.reset(spawnX, 0); // solo frutas
+                // decidir si es bomba o fruta
+                // (1 de cada 10 será bomba)
+                let objType = 0;
+                if (rand(10) = 1) { let objType = 1; }
+
+                do obj.reset(spawnX, objType);
             }
 
             // -------------------
@@ -132,13 +136,28 @@ class Game {
             // -------------------
             if (obj.isCaught(player.getX(), player.getWidth())) {
 
-                let score = score + 1;
+                if (obj.getType() = 0) {
+                    // fruta → sumar punto
+                    let score = score + 1;
+                } else {
+                    // bomba → perder vida
+                    let lives = lives - 1;
 
-                // Nuevo objeto
+                    if (lives = 0) {
+                        do Screen.clearScreen();
+                        do Output.moveCursor(10, 10);
+                        do Output.printString("GAME OVER");
+                        do Output.moveCursor(11, 10);
+                        do Output.printString("Score: ");
+                        do Output.printInt(score);
+                        return;
+                    }
+                }
+
+                // Respawn
                 let spawnX = rand(460);
 
                 let same = (spawnX = lastSpawnX);
-
                 if (same) {
                     let spawnX = spawnX + 20;
                     if (spawnX > 460) { let spawnX = spawnX - 40; }
@@ -146,7 +165,11 @@ class Game {
 
                 let lastSpawnX = spawnX;
 
-                do obj.reset(spawnX, 0); // solo frutas
+                // decidir nuevo tipo
+                let objType = 0;
+                if (rand(10) = 1) { let objType = 1; }
+
+                do obj.reset(spawnX, objType);
             }
 
             // -------------------

@@ -11,7 +11,7 @@ class Falling {
         let x = startX;
         let y = 0;
 
-        //Tamaño según tipo
+        // Tamaño según tipo
         if (t = 1) {
             let w = 16;
             let h = 16;
@@ -20,8 +20,7 @@ class Falling {
             let h = 12;
         }
 
-
-        let speed = 1; // velocidad fija y lenta
+        let speed = 1;
         let type = t;
 
         do draw();
@@ -29,13 +28,14 @@ class Falling {
     }
 
     method void draw() {
-        var int x1, y1, x2, y2;
+        var int x1, y1, x2, y2, ix1, iy1, ix2, iy2; // <-- todas las vars al inicio
+
         let x1 = x;
         let y1 = y;
         let x2 = x + w;
         let y2 = y + h;
 
-        // Clamp
+        // Clamp externo (general)
         if (x1 < 0) { let x1 = 0; }
         if (y1 < 0) { let y1 = 0; }
         if (x2 > 511) { let x2 = 511; }
@@ -43,27 +43,46 @@ class Falling {
         if (x2 < x1) { let x2 = x1; }
         if (y2 < y1) { let y2 = y1; }
 
-        // Si es bomba -> dibujo doble rectángulo (borde)
+        // Dibujo según tipo
         if (type = 1) {
+            // ============================
+            // Bomba: borde + interior hueco
+            // ============================
+
             // Borde exterior
             do Screen.setColor(true);
             do Screen.drawRectangle(x1, y1, x2, y2);
 
-            // Interior apagado => crea un "hueco"
-            do Screen.setColor(false);
-            do Screen.drawRectangle(x1 + 2, y1 + 2, x2 - 2, y2 - 2);
+            // Interior seguro (calculo usando variables ya declaradas)
+            let ix1 = x1 + 2;
+            let iy1 = y1 + 2;
+            let ix2 = x2 - 2;
+            let iy2 = y2 - 2;
 
-            do Screen.setColor(true); // reset color
+            // Clamp interior (evita Illegal rectangle)
+            if (ix1 < 0)   { let ix1 = 0; }
+            if (iy1 < 0)   { let iy1 = 0; }
+            if (ix2 > 511) { let ix2 = 511; }
+            if (iy2 > 255) { let iy2 = 255; }
+
+            if (ix2 < ix1) { let ix2 = ix1; }
+            if (iy2 < iy1) { let iy2 = iy1; }
+
+            do Screen.setColor(false);
+            do Screen.drawRectangle(ix1, iy1, ix2, iy2);
+
+            do Screen.setColor(true);
         }
         else {
+            // ============================
             // Fruta normal
+            // ============================
             do Screen.setColor(true);
             do Screen.drawRectangle(x1, y1, x2, y2);
         }
 
         return;
     }
-
 
     method void erase() {
         var int x1, y1, x2, y2;
@@ -72,55 +91,50 @@ class Falling {
         let x2 = x + w;
         let y2 = y + h;
 
+        // Clamp seguro
         if (x1 < 0) { let x1 = 0; }
         if (y1 < 0) { let y1 = 0; }
         if (x2 > 511) { let x2 = 511; }
         if (y2 > 255) { let y2 = 255; }
-
         if (x2 < x1) { let x2 = x1; }
         if (y2 < y1) { let y2 = y1; }
 
         do Screen.setColor(false);
         do Screen.drawRectangle(x1, y1, x2, y2);
+
         return;
     }
 
-
-
-    /** Mueve el objeto hacia abajo. Devuelve 1 si llegó al fondo (necesita respawn), 0 si sigue. */
+    // Devuelve 1 si llegó al fondo y necesita respawn
     method int fall() {
         do erase();
         let y = y + speed;
-        if ((y > 230)) {
+
+        if (y > 230) { 
             return 1;
-        } else {
-            do draw();
-            return 0;
         }
+
+        do draw();
+        return 0;
     }
 
-    /** Reinicia la posición y el tipo. startX debe estar dentro del ancho de pantalla. */
     method void reset(int startX, int t) {
         do erase();
+
         let x = startX;
         let y = 0;
         let type = t;
 
-        // Clamp duro
-        if (x < 0) { let x = 0; }
-        if (x > 480) { let x = 480; }
+        if (x < 0)  { let x = 0; }
+        if (x > 480){ let x = 480; }
 
         do draw();
         return;
     }
 
-
-    /** Retorna true si fue atrapado (colisión AABB simple). */
     method boolean isCaught(int playerX, int playerWidth) {
-        // comprobamos que el borde inferior del objeto haya alcanzado la canasta
-        if ((y + h > 201)) {
-            // colisión horizontal: overlap entre [x, x+w] y [playerX, playerX+playerWidth]
-            if (((x < (playerX + playerWidth)) & ((x + w) > playerX))) {
+        if (y + h > 201) {
+            if ((x < (playerX + playerWidth)) & ((x + w) > playerX)) {
                 return true;
             }
         }

@@ -32,7 +32,7 @@ call Falling.draw 1
 pop temp 0
 push pointer 0
 return
-function Falling.draw 4
+function Falling.draw 8
 push argument 0
 pop pointer 0
 push this 0
@@ -117,21 +117,83 @@ push local 2
 push local 3
 call Screen.drawRectangle 4
 pop temp 0
-push constant 0
-call Screen.setColor 1
-pop temp 0
 push local 0
 push constant 2
 add
+pop local 4
 push local 1
 push constant 2
 add
+pop local 5
 push local 2
 push constant 2
 sub
+pop local 6
 push local 3
 push constant 2
 sub
+pop local 7
+push local 4
+push constant 0
+lt
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push constant 0
+pop local 4
+label IF_FALSE7
+push local 5
+push constant 0
+lt
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push constant 0
+pop local 5
+label IF_FALSE8
+push local 6
+push constant 511
+gt
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+push constant 511
+pop local 6
+label IF_FALSE9
+push local 7
+push constant 255
+gt
+if-goto IF_TRUE10
+goto IF_FALSE10
+label IF_TRUE10
+push constant 255
+pop local 7
+label IF_FALSE10
+push local 6
+push local 4
+lt
+if-goto IF_TRUE11
+goto IF_FALSE11
+label IF_TRUE11
+push local 4
+pop local 6
+label IF_FALSE11
+push local 7
+push local 5
+lt
+if-goto IF_TRUE12
+goto IF_FALSE12
+label IF_TRUE12
+push local 5
+pop local 7
+label IF_FALSE12
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push local 4
+push local 5
+push local 6
+push local 7
 call Screen.drawRectangle 4
 pop temp 0
 push constant 0
@@ -251,14 +313,12 @@ goto IF_FALSE0
 label IF_TRUE0
 push constant 1
 return
-goto IF_END0
 label IF_FALSE0
 push pointer 0
 call Falling.draw 1
 pop temp 0
 push constant 0
 return
-label IF_END0
 function Falling.reset 0
 push argument 0
 pop pointer 0
