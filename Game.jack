@@ -49,18 +49,29 @@ class Game {
         return this;
     }
 
-    /** Generador simple para números pseudoaleatorios */
+    /** Generador aleatorio compatible con Jack (16 bits) */
     method int rand(int range) {
-        var int t;
+        var int r;
 
         if (range < 1) { return 0; }
 
-        let seed = seed + 1;
-        let t = seed * 37;
-        let t = t - (t / range) * range;
+        // LCG seguro: seed = (seed * 1103515245 + 12345) & 0x7FFF
+        let seed = seed * 25173 + 13849;
 
-        return t;
+        // reducir la magnitud con AND
+        let seed = seed & 32767;  // 0x7FFF = 32767
+
+        // Ahora seed siempre está entre 0 y 32767
+        let r = seed;
+
+        // Ajustar al rango deseado
+        while (r > range) {
+            let r = r - range;
+        }
+
+        return r;
     }
+
 
     /** HUD optimizado: NO crea strings en el loop */
     method void drawHUD() {
@@ -77,6 +88,7 @@ class Game {
         var int res;
         var int r;
         var int spawnX;
+        var boolean same;
 
         while (true) {
 
@@ -102,8 +114,10 @@ class Game {
 
                 // Respawn fruta
                 let spawnX = rand(460);
+                
+                let same = (spawnX = lastSpawnX);
 
-                if (spawnX = lastSpawnX) {
+                if (same) {
                     let spawnX = spawnX + 20;
                     if (spawnX > 460) { let spawnX = spawnX - 40; }
                 }
@@ -123,7 +137,9 @@ class Game {
                 // Nuevo objeto
                 let spawnX = rand(460);
 
-                if (spawnX = lastSpawnX) {
+                let same = (spawnX = lastSpawnX);
+
+                if (same) {
                     let spawnX = spawnX + 20;
                     if (spawnX > 460) { let spawnX = spawnX - 40; }
                 }

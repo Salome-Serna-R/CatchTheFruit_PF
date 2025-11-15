@@ -94,21 +94,29 @@ push constant 0
 return
 label IF_FALSE0
 push this 4
-push constant 1
+push constant 25173
+call Math.multiply 2
+push constant 13849
 add
 pop this 4
 push this 4
-push constant 37
-call Math.multiply 2
+push constant 32767
+and
+pop this 4
+push this 4
 pop local 0
-push local 0
+label WHILE_EXP0
 push local 0
 push argument 1
-call Math.divide 2
+gt
+not
+if-goto WHILE_END0
+push local 0
+push argument 1
 sub
-push argument 1
-call Math.multiply 2
 pop local 0
+goto WHILE_EXP0
+label WHILE_END0
 push local 0
 return
 function Game.drawHUD 0
@@ -132,7 +140,7 @@ call Output.printInt 1
 pop temp 0
 push constant 0
 return
-function Game.run 4
+function Game.run 5
 push argument 0
 pop pointer 0
 label WHILE_EXP0
@@ -225,6 +233,8 @@ pop local 3
 push local 3
 push this 5
 eq
+pop local 4
+push local 4
 if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
@@ -272,6 +282,8 @@ pop local 3
 push local 3
 push this 5
 eq
+pop local 4
+push local 4
 if-goto IF_TRUE5
 goto IF_FALSE5
 label IF_TRUE5
