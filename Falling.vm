@@ -15,7 +15,7 @@ function Falling.new 0
     pop this 2
     push constant 16
     pop this 3
-    push constant 4
+    push constant 5
     pop this 4
     goto Falling_0
 label Falling_1
@@ -23,7 +23,7 @@ label Falling_1
     pop this 2
     push constant 12
     pop this 3
-    push constant 1
+    push constant 3
     pop this 4
 label Falling_0
     push argument 1
@@ -355,11 +355,11 @@ function Falling.reset 0
     eq
     not
     if-goto Falling_43
-    push constant 4
+    push constant 5
     pop this 4
     goto Falling_42
 label Falling_43
-    push constant 1
+    push constant 3
     pop this 4
 label Falling_42
     push this 0
