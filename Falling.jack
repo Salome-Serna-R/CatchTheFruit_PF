@@ -15,9 +15,11 @@ class Falling {
         if (t = 1) {
             let w = 16;
             let h = 16;
+            let speed = 5;   // bombas caen más rápido
         } else {
             let w = 12;
             let h = 12;
+            let speed = 3;   // fruta normal
         }
 
         // =============================
@@ -122,14 +124,10 @@ class Falling {
         let y = 0;
         let type = t;
 
-        // =============================
-        // CAMBIO: velocidad según tipo
-        // (para respawn)
-        // =============================
         if (t = 1) {
-            let speed = 2;   // bomba rápida
+            let speed = 5;   // bombas rápidas
         } else {
-            let speed = 1;   // fruta lenta
+            let speed = 3;   // fruta normal
         }
 
         if (x < 0)  { let x = 0; }
