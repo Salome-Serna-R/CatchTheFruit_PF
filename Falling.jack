@@ -4,8 +4,8 @@
 class Falling {
     field int x, y;
     field int w, h;
-    field int speed;
-    field int type; // 0 = fruta, 1 = bomba
+    field int speed;   // velocidad variable según tipo
+    field int type;    // 0 = fruta, 1 = bomba
 
     constructor Falling new(int startX, int t) {
         let x = startX;
@@ -22,21 +22,30 @@ class Falling {
             let speed = 3;   // fruta normal
         }
 
+        // =============================
+        // CAMBIO: velocidad según tipo
+        // =============================
         let type = t;
+
+        if (t = 1) {
+            let speed = 2;   // bomba más rápida
+        } else {
+            let speed = 1;   // fruta normal
+        }
 
         do draw();
         return this;
     }
 
     method void draw() {
-        var int x1, y1, x2, y2, ix1, iy1, ix2, iy2; // <-- todas las vars al inicio
+        var int x1, y1, x2, y2, ix1, iy1, ix2, iy2;
 
         let x1 = x;
         let y1 = y;
         let x2 = x + w;
         let y2 = y + h;
 
-        // Clamp externo (general)
+        // Clamp externo
         if (x1 < 0) { let x1 = 0; }
         if (y1 < 0) { let y1 = 0; }
         if (x2 > 511) { let x2 = 511; }
@@ -46,38 +55,28 @@ class Falling {
 
         // Dibujo según tipo
         if (type = 1) {
-            // ============================
-            // Bomba: borde + interior hueco
-            // ============================
-
-            // Borde exterior
+            // Bomba: exterior + interior vacío
             do Screen.setColor(true);
             do Screen.drawRectangle(x1, y1, x2, y2);
 
-            // Interior seguro (calculo usando variables ya declaradas)
             let ix1 = x1 + 2;
             let iy1 = y1 + 2;
             let ix2 = x2 - 2;
             let iy2 = y2 - 2;
 
-            // Clamp interior (evita Illegal rectangle)
             if (ix1 < 0)   { let ix1 = 0; }
             if (iy1 < 0)   { let iy1 = 0; }
             if (ix2 > 511) { let ix2 = 511; }
             if (iy2 > 255) { let iy2 = 255; }
-
             if (ix2 < ix1) { let ix2 = ix1; }
             if (iy2 < iy1) { let iy2 = iy1; }
 
             do Screen.setColor(false);
             do Screen.drawRectangle(ix1, iy1, ix2, iy2);
-
             do Screen.setColor(true);
         }
         else {
-            // ============================
             // Fruta normal
-            // ============================
             do Screen.setColor(true);
             do Screen.drawRectangle(x1, y1, x2, y2);
         }
@@ -92,7 +91,6 @@ class Falling {
         let x2 = x + w;
         let y2 = y + h;
 
-        // Clamp seguro
         if (x1 < 0) { let x1 = 0; }
         if (y1 < 0) { let y1 = 0; }
         if (x2 > 511) { let x2 = 511; }
@@ -148,11 +146,6 @@ class Falling {
         return false;
     }
 
-    method int getType() {
-        return type;
-    }
-
-    method int getWidth() {
-        return w;
-    }
+    method int getType() { return type; }
+    method int getWidth() { return w; }
 }
